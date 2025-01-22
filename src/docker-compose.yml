@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  db:
+    build:
+      context: . 
+      dockerfile: ./postgres-db/Dockerfile
+    container_name: ps-postgres
+    environment:
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpass
+      POSTGRES_DB: portfolio_simulator
+    ports:
+      - "5432:5432"
+    # volumes:
+    #   - ./postgres-db/data:/var/lib/postgresql/data  # example to persist data on host
+
+  discovery-service:
+    build:
+      context: . 
+      dockerfile: ./discovery-service/Dockerfile
+    container_name: discovery-service
+    depends_on:
+      - db
+    ports:
+      - "4900:4900"
+    environment:
+      PS_DATABASE_HOST: db
+      PS_DATABASE_PORT: 5432
+      PS_DATABASE_USER: dbuser
+      PS_DATABASE_PASSWORD: dbpass
+      PS_DATABASE_NAME: portfolio_simulator
+      PS_DISCOVERY_PORT: 4900
+
