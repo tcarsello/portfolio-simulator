@@ -106,8 +106,10 @@ func registerServiceNodeHandler(db *sql.DB) http.HandlerFunc {
         serviceMapLock.RUnlock()
         if !ok {
             serviceMapLock.Lock()
-            serviceMap[serviceId] = &ServiceEndpointList{
-                endpoints:  make([]ServiceEndpoint, 0),
+            if _, ok = serviceMap[serviceId]; !ok {
+                serviceMap[serviceId] = &ServiceEndpointList{
+                    endpoints:  make([]ServiceEndpoint, 0),
+                }
             }
             serviceMapLock.Unlock()
         }
